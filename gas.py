@@ -1,18 +1,19 @@
 import pygame
 import random
+import sys
+import math
 from pygame.sprite import Sprite
 from pygame.sprite import Group
 from particle import Particle
+from settings import Settings
+from info import Info
 
-
-def create_gas(screen, particles, number_particles):
-    particle = Particle(screen)
+def create_gas(settings, screen, particles, number_particles):
     for number in range(number_particles):
-        create_particle(screen, particles, number)
+        create_particle(settings, screen, particles, number)
 
-def create_particle(screen, particles, number):
-    """Create an alien, and place it in the row."""
-    particle = Particle(screen)
+def create_particle(settings, screen, particles, number):
+    particle = Particle(settings, screen)
     particles.add(particle)
 
 def check_keydown_events(event, screen, particles):
@@ -34,32 +35,49 @@ def change_speed(particles, increase = True):
             particle.vel_y *= (1.0 - random.random())
 
 def check_events(screen, particles):
-    """Respond to keypresses and mouse events."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event, screen, particles)
 
-def __main__():
+def avg_speed(particles):
+    s = 0
+    for particle in particles:
+        s += math.abs(particle.vel_x) + math.abs(particle.vel_y)
+    return s
+    
+def total_kinetic_energy(particles):
+    s = 0
+    for particle in particles:
+        s += particle.kinetic_energy()
+    return s
+    
+if __name__ == "__main__":
+    settings = Settings()
+
     pygame.init()
+    
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((1200,800))
+    screen = pygame.display.set_mode((settings.screen_width,settings.screen_height))
+    
+    info = Info(settings, screen)
     background = pygame.Surface(screen.get_size())
-    background.fill((255, 255, 255))
+    background.fill(settings.bg_color)
     screen.blit(background, (0, 0))
     particles = Group()
-    create_gas(screen, particles, 10)
-    speed_increment = False
-    speed_decrement = False
-
+    create_gas(settings, screen, particles, 10)
+    
     keepGoing = True
     while keepGoing:
         clock.tick(30)
         check_events(screen, particles)
         particles.clear(screen, background)
         particles.update()
+        screen.fill(settings.bg_color)
         particles.draw(screen)
+        info.prep_kinetic_energy(total_kinetic_energy(particles))
+        info.show_energy()
         pygame.display.flip()
-
+        
 __main__()
