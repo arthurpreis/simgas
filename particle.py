@@ -26,14 +26,18 @@ class Particle(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+        self.collision = False
+
     def check_edges_hor(self):
         """Return True if alien is at edge of screen."""
         screen_rect = self.screen.get_rect()
         if self.rect.right >= screen_rect.right:
             self.rect.right = screen_rect.right
+            self.collision = True
             return True
-        elif self.rect.left <= 0:
-            self.rect.right = screen_rect.right
+        elif self.rect.left <= screen_rect.left:
+            self.rect.left = screen_rect.left
+            self.collision = True
             return True
         else:
             return False
@@ -43,11 +47,13 @@ class Particle(Sprite):
         screen_rect = self.screen.get_rect()
         if self.rect.top <= screen_rect.top:
             self.rect.top = screen_rect.top
+            self.collision = True
             return True
-            
-        elif self.rect.bottom > screen_rect.bottom:
+
+        elif self.rect.bottom >= screen_rect.bottom:
             self.rect.bottom = screen_rect.bottom
             return True
+            self.collision = True
         else:
             return False
 
@@ -70,6 +76,6 @@ class Particle(Sprite):
     def color_speed(self):
         self.image.fill((230, 230, 230))
         pygame.draw.circle(self.image, (0, 0, 255), (25, 25), 25, 0)
-    
+
     def kinetic_energy(self):
         return 0.5*self.mass*(math.pow(self.vel_x,2) + math.pow(self.vel_y,2))
