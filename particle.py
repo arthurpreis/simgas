@@ -5,31 +5,34 @@ import math
 
 class Particle(Sprite):
     def __init__(self, settings, screen):
-        """Initialize the alien, and set its starting position."""
+        """Initialize the particle, and set its starting position."""
         super(Particle, self).__init__()
         self.screen = screen
-        self.vel_x = random.random() * 20.0
+        self.vel_x = random.random() * 20.0 #TODO: gaussian distribution
         self.vel_y = random.random() * 20.0
         self.mass = 1
 
-        # Load the alien image, and set its rect attribute.
+        # Draw the circle and set the Rect
         self.image = pygame.Surface(settings.particle_size)
         self.image.fill(settings.bg_color)
-        pygame.draw.circle(self.image, (0, 0, 255), settings.particle_size, 25, 0)
+        pygame.draw.circle(self.image, (0, 0, 255), (0,0), 25, 0) #TODO: fix circle
         self.rect = self.image.get_rect()
 
-        # Start each new alien near the top left of the screen.
+        # Start each new particle near the top left of the screen.
         self.rect.x = random.randint(0,settings.screen_width)
         self.rect.y = random.randint(0,settings.screen_height)
 
-        # Store the alien's exact position.
+        # Store the particle's exact position.
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+        # Used by collision counter
         self.collision = False
 
     def check_edges_hor(self):
-        """Return True if alien is at edge of screen."""
+        """Return True if particle is at edge of screen (right or left)."""
+        #TODO fix out of bound particles
+        #TODO fix jitter
         screen_rect = self.screen.get_rect()
         if self.rect.right >= screen_rect.right:
             self.rect.right = screen_rect.right
@@ -43,7 +46,8 @@ class Particle(Sprite):
             return False
 
     def check_edges_ver(self):
-        """Return True if alien is at edge of screen."""
+        """Return True if particle is at edge of screen (top or bottom)."""
+        #TODO fix out of bound particles
         screen_rect = self.screen.get_rect()
         if self.rect.top <= screen_rect.top:
             self.rect.top = screen_rect.top
@@ -58,6 +62,7 @@ class Particle(Sprite):
             return False
 
     def update(self):
+        #TODO more realistic momentum transfer
         if self.check_edges_ver():
             self.vel_y *= -1
         if self.check_edges_hor():
@@ -70,10 +75,11 @@ class Particle(Sprite):
         self.rect.y = self.y
 
     def blitme(self):
-        """Draw the alien at its current location."""
+        """Draw the particle at its current location."""
         self.screen.blit(self.image, self.rect)
 
     def color_speed(self):
+        #TODO map color as function of kinetic energy
         self.image.fill((230, 230, 230))
         pygame.draw.circle(self.image, (0, 0, 255), (25, 25), 25, 0)
 
