@@ -3,14 +3,14 @@ import random
 import sys
 from particle import Particle
 
-def create_gas(settings, screen, particles):
+def create_gas(settings, screen, particles, wall):
     """Creates collections of particles"""
     for number in range(settings.number_particles):
-        create_particle(settings, screen, particles, number)
+        create_particle(settings, screen, particles, wall)
 
-def create_particle(settings, screen, particles, number):
+def create_particle(settings, screen, particles, wall):
     """Create particle and adds it to collection"""
-    particle = Particle(settings, screen)
+    particle = Particle(settings, screen, wall)
     particles.add(particle)
 
 def check_keydown_events(event, settings, screen, particles, wall):
@@ -20,13 +20,13 @@ def check_keydown_events(event, settings, screen, particles, wall):
     elif event.key == pygame.K_DOWN:
         change_speed(particles, settings, increase = False)
     elif event.key == pygame.K_RIGHT:
-        move_wall(wall, settings, direction = 'right')
+        move_wall(wall, screen, settings, particles, direction = 'right')
     elif event.key == pygame.K_LEFT:
-        move_wall(wall, settings, direction = 'left')
+        move_wall(wall, screen, settings, particles, direction = 'left')
     elif event.key == pygame.K_q:
         sys.exit()
     elif event.key == pygame.K_m:
-        create_particle(settings, screen, particles, 1)
+        create_particle(settings, screen, particles, wall)
     elif event.key == pygame.K_n:
         remove_particle(particles)
 
@@ -55,11 +55,16 @@ def check_events(screen, settings, particles, info, wall):
 
 def remove_particle(particles):
     for particle in particles:
-        particles.remove(particle)
+        particles.remove(particle) #bodge
         break
 
-def move_wall(wall, settings, direction = 'right'):
+def move_wall(wall, screen, settings, particles, direction = 'right'):
+    screen_rect = screen.get_rect()
     if direction == 'right':
-        wall.x += 10
+        if wall.rect.right < screen_rect.right:
+            wall.rect.right += settings.wall_speed
     else:
-        wall.x -= 10
+        if wall.rect.left > screen_rect.left:
+            wall.rect.right -= settings.wall_speed
+    for particle in particles:
+        particle.update(wall)

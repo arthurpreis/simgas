@@ -17,7 +17,7 @@ class Info():
         # Prepare the initial informations
         self.timer_count = 0
         self.collision_rate = 0
-        self.volume = (settings.screen_height * settings.screen_width)/10000
+        self.volume = 0
 
     def prep_kinetic_energy(self, kin_energy):
         """Turn the kinetic energy into a rendered image."""
@@ -73,8 +73,11 @@ class Info():
         """Draw collision image to the screen."""
         self.screen.blit(self.col_image, self.col_rect)
 
-    def prep_volume(self):
+    def prep_volume(self, wall):
         """Turn the collision rate into a rendered image."""
+        self.volume = (self.settings.screen_height *
+                        (self.settings.screen_width - wall.rect.right)
+                                )/10000
         rounded_volume = int(round(self.volume, 0))
         vol_str = "V = " + "{:,}".format(rounded_volume) + ' u.v.'
         self.vol_image = self.font.render(vol_str, True, self.text_color,
@@ -104,11 +107,11 @@ class Info():
         """Draw energy image to the screen."""
         self.screen.blit(self.n_par_image, self.n_par_rect)
 
-    def prep(self, kin_energy, num_particles):
+    def prep(self, wall, kin_energy, num_particles):
         """Prepares all images from info, besides collisions"""
         self.prep_time()
         self.prep_kinetic_energy(kin_energy)
-        self.prep_volume()
+        self.prep_volume(wall)
         self.prep_num_particles(num_particles)
 
     def show(self):

@@ -9,6 +9,8 @@ class Settings():
 
         # Wall settings
         self.wall_size = (50, self.screen_width)
+        self.wall_speed = 50
+
         # Particle settings
         self.particle_size = (40, 40)
         self.particle_pos = (20, 20)

@@ -29,4 +29,4 @@ class Wall(Sprite):
         self.screen.blit(self.image, self.rect)
 
     def draw(self, screen):
-        screen.blit(self.image, (self.x, self.y))
+        screen.blit(self.image, (self.rect.x, self.rect.y))

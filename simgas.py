@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     wall = Wall(settings, screen)
     particles = Group()
-    events.create_gas(settings, screen, particles)
+    events.create_gas(settings, screen, particles, wall)
 
     #Sets clock (used for fixed FPS) and timer (used to count collision rate)
     clock = pygame.time.Clock()
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         particles.clear(screen, background)
 
         for particle in particles:
-            particle.update() #updates vel and pos
+            particle.update(wall) #updates vel and pos
             if particle.collision:
                 info.collision_rate += 1
                 particle.collision = False
@@ -80,9 +80,8 @@ if __name__ == "__main__":
         screen.fill(settings.bg_color) #cleans screen
         particles.draw(screen)
         wall.draw(screen)
-        #screen.blit(wall.image, (wall.x, wall.y))
 
-        info.prep(total_kinetic_energy(particles), len(particles))
+        info.prep(wall, total_kinetic_energy(particles), len(particles))
         info.show()
 
         pygame.display.flip()
