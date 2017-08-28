@@ -13,34 +13,53 @@ def create_particle(settings, screen, particles, number):
     particle = Particle(settings, screen)
     particles.add(particle)
 
-def check_keydown_events(event, settings, screen, particles):
+def check_keydown_events(event, settings, screen, particles, wall):
     """Respond to keypresses."""
     if event.key == pygame.K_UP:
         change_speed(particles, settings, increase = True)
     elif event.key == pygame.K_DOWN:
         change_speed(particles, settings, increase = False)
+    elif event.key == pygame.K_RIGHT:
+        move_wall(wall, settings, direction = 'right')
+    elif event.key == pygame.K_LEFT:
+        move_wall(wall, settings, direction = 'left')
     elif event.key == pygame.K_q:
         sys.exit()
+    elif event.key == pygame.K_m:
+        create_particle(settings, screen, particles, 1)
+    elif event.key == pygame.K_n:
+        remove_particle(particles)
 
 def change_speed(particles, settings, increase = True):
     """Increases or decreases energy of all particles, depending on input"""
     for particle in particles:
         if increase:
             if abs(particle.vel_x) <= settings.max_speed:
-                particle.vel_x *= (1.0 + random.random()) #TODO change distribution
+                particle.vel_x *= (1.5 + random.random())
             if abs(particle.vel_y) <= settings.max_speed:
-                particle.vel_y *= (1.0 + random.random())
+                particle.vel_y *= (1.5 + random.random())
         else:
-            particle.vel_x *= (1.0 - random.random())
-            particle.vel_y *= (1.0 - random.random())
+            particle.vel_x *= random.random()
+            particle.vel_y *= random.random()
 
-def check_events(screen, settings, particles, info):
+def check_events(screen, settings, particles, info, wall):
     """check keystrokes and timer"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, screen, particles)
+            check_keydown_events(event, settings, screen, particles, wall)
         elif event.type == pygame.USEREVENT + 1:
             info.increase_time()
             pygame.time.set_timer(pygame.USEREVENT + 1, 1000)
+
+def remove_particle(particles):
+    for particle in particles:
+        particles.remove(particle)
+        break
+
+def move_wall(wall, settings, direction = 'right'):
+    if direction == 'right':
+        wall.x += 10
+    else:
+        wall.x -= 10

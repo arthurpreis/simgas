@@ -8,14 +8,14 @@ class Particle(Sprite):
         """Initialize the particle, and set its starting position."""
         super(Particle, self).__init__()
         self.screen = screen
-        self.vel_x = random.random() * 20.0 #TODO: gaussian distribution
-        self.vel_y = random.random() * 20.0
+        self.vel_x = random.random() * settings.initial_speed
+        self.vel_y = random.random() * settings.initial_speed
         self.mass = 1
 
         # Draw the circle and set the Rect
         self.image = pygame.Surface(settings.particle_size)
         self.image.fill(settings.bg_color)
-        pygame.draw.circle(self.image, (0, 0, 255), (0,0), 25, 0) #TODO: fix circle
+        pygame.draw.circle(self.image, (0, 0, 255), settings.particle_pos, settings.particle_radius, 0) #TODO: fix circle
         self.rect = self.image.get_rect()
 
         # Start each new particle near the top left of the screen.
@@ -34,11 +34,11 @@ class Particle(Sprite):
         #TODO fix out of bound particles
         #TODO fix jitter
         screen_rect = self.screen.get_rect()
-        if self.rect.right >= screen_rect.right:
+        if self.rect.right > screen_rect.right:
             self.rect.right = screen_rect.right
             self.collision = True
             return True
-        elif self.rect.left <= screen_rect.left:
+        elif self.rect.left < screen_rect.left:
             self.rect.left = screen_rect.left
             self.collision = True
             return True
@@ -49,12 +49,12 @@ class Particle(Sprite):
         """Return True if particle is at edge of screen (top or bottom)."""
         #TODO fix out of bound particles
         screen_rect = self.screen.get_rect()
-        if self.rect.top <= screen_rect.top:
+        if self.rect.top < screen_rect.top:
             self.rect.top = screen_rect.top
             self.collision = True
             return True
 
-        elif self.rect.bottom >= screen_rect.bottom:
+        elif self.rect.bottom > screen_rect.bottom:
             self.rect.bottom = screen_rect.bottom
             return True
             self.collision = True
@@ -62,7 +62,6 @@ class Particle(Sprite):
             return False
 
     def update(self):
-        #TODO more realistic momentum transfer
         if self.check_edges_ver():
             self.vel_y *= -1
         if self.check_edges_hor():

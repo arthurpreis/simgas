@@ -31,6 +31,7 @@ from pygame.sprite import Sprite
 from info import Info
 from particle import Particle
 from settings import Settings
+from wall import Wall
 
 def avg_speed(particles):
     s = 0
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((settings.screen_width,settings.screen_height))
     background = pygame.Surface(screen.get_size())
 
+    wall = Wall(settings, screen)
     particles = Group()
     events.create_gas(settings, screen, particles)
 
@@ -66,7 +68,7 @@ if __name__ == "__main__":
     while keepGoing:
         clock.tick(30) #30 FPS
 
-        events.check_events(screen, settings, particles, info)
+        events.check_events(screen, settings, particles, info, wall)
         particles.clear(screen, background)
 
         for particle in particles:
@@ -77,8 +79,10 @@ if __name__ == "__main__":
 
         screen.fill(settings.bg_color) #cleans screen
         particles.draw(screen)
+        wall.draw(screen)
+        #screen.blit(wall.image, (wall.x, wall.y))
 
-        info.prep(total_kinetic_energy(particles))
+        info.prep(total_kinetic_energy(particles), len(particles))
         info.show()
 
         pygame.display.flip()
